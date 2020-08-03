@@ -20,5 +20,10 @@ import products.views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('products/', products.views.index),
-    path('products/create', products.views.input_product)
+    path('products/create', products.views.input_product),
+    path('products/update/<product_id>', products.views.update_product,
+         name="update_product_route"),
+    path('products/delete/<product_id>', products.views.delete_product,
+         name="delete_product_route")
 ]
+
