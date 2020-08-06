@@ -1,5 +1,5 @@
 from django import forms
-from .models import Product
+from .models import Product, Category
 
 
 class ProductForm(forms.ModelForm):
@@ -7,4 +7,13 @@ class ProductForm(forms.ModelForm):
         model = Product
         fields = ('name', 'brand', 'desc', 'origin', 'weight_per_pack',
                   'qty_per_pack', 'barcode_spec', 'barcode_no', 'image',
-                  'category', 'usage')
+                  'root_price', 'category', 'usage')
+        widgets = {
+            'editor': forms.HiddenInput(),
+        }
+
+
+class SearchForm(forms.Form):
+    name = forms.CharField(max_length=100, required=False)
+    category = forms.ModelChoiceField(queryset=Category.objects.all(),
+                                      required=False)
