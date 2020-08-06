@@ -1,0 +1,11 @@
+body{
+    background-color: blanchedalmond;
+}
+
+.card-deck{
+    margin-bottom: 10px;
+}
+
+.floating-btn {
+    border-radius: 20px;
+}

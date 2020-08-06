@@ -1,39 +1,53 @@
+{% extends 'base.template.html' %}
 {%load static%}
-<!doctype html>
-<html lang="en">
-  <head>
-    <!-- Required meta tags -->
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-    <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
-    <link rel="stylesheet" href="{% static 'styles.css' %}">
-
-    <title>E-commerce App</title>
-  </head>
-  <body>
-  <div class="container">
+{%block title%} E-commerce Home Page {%endblock%}
+{%block content%}
     <h1>Products</h1>
     <p>Here are all our products</p>
-    {%for product in products %}
+     
+    {% if request.user.is_authenticated  %}
+    <p>Welcome {{request.user}}</p>
+     <p><a href = "../accounts/logout">Logout</a></p>
+    {% else %}
+    <p>Please <a href="../accounts/login">Login</a></p>
+    {%endif%}
+
+    <a class="btn btn-secondary floating-btn" href="{% url 'create_product_route' %}" role="button" data-toggle="tooltip" data-placement="bottom" title="Add products">+</a>
+   
     <div class="row">
-    <div class="col-md-3">
-        <img src="{{product.image}}" class="img-thumbnail rounded"/>
-    </div>
-    <div class="col-md-5">
-    <h6>{{product.name}}</h6>
-    <p>{{product.desc}}</p>
-    </div>
-    <div class="col-md-3">
-    <a class="btn btn-primary" href="{% url 'update_product_route' product_id=product.id%}" role="button">Edit</a>
+    <div class="card-deck">    <!--startdeck-->
+{%for product in products %}
+   {% if forloop.counter0|divisibleby:3 and forloop.counter0 != 0 %}
+        </div> <!--end deck-->
+        </div> <!--end row-->
+        <div class="row">
+         <div class="card-deck">    <!--startdeck-->
+  {% endif %}
+   
+
+
+  <div class="card col-md-4">
+    <img src="{{product.image}}" class="card-img-top rounded" alt="product-image">
+    <div class="card-body">
+      {{forloop.counter0}}
+      <h5 class="card-title">{{product.root_price}}</h5>
+      <p class="card-text">{{product.name}}</p>
+      <p class="card-text">{{product.desc}}</p>
+      <p class="card-text">{{product.weight_per_pack}}g</p>
+      <p class="card-text"><small class="text-muted">Add to Cart</small></p>
+      {% if perms.products.can_change_product %}
+      <div class="card-footer">
+     <a class="btn btn-primary" href="{% url 'update_product_route' product_id=product.id%}" role="button">Edit</a>
     <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#deleteModal-{{product.id}}">
     Delete
     </button>
     </div>
+    {% endif%}
     </div>
-
-    <!-- Modal -->
+  </div>
+  
+   <!-- Modal -->
 <div class="modal fade" id="deleteModal-{{product.id}}" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
@@ -56,12 +70,13 @@
     </div>
   </div>
 </div>
-    {%endfor%}
-  </div>
-    <!-- Optional JavaScript -->
-    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
-  </body>
-</html>
+{%endfor%}
+
+    </div> <!--end deck last-->
+        </div> <!--end row last-->
+
+{%endblock%}
+
+{%block js%}
+<script src="{% static '/js/main.js' %}"></script>
+{%endblock%}

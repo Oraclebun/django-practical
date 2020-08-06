@@ -1,15 +1,13 @@
 {% extends 'base.template.html' %}
-{%load crispy_forms_tags %}
 {%load static%}
+{% load crispy_forms_tags%}
 
-{%block title%} E-commerce Update Product {%endblock%}
+{%block title%} E-commerce Create Product Instance {%endblock%}
 {%block content%}
-    <h1>Edit Products Form</h1>
+    <h1>New Products Instance Form</h1>
     <form method="POST">
     {% csrf_token %}
     {{ form|crispy}}
-    {{ formset.management_form }}
-    {{ formset }}
     <input type="submit"/>
     </form>    
   {% endblock %}

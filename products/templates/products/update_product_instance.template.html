@@ -1,0 +1,12 @@
+{% extends 'base.template.html' %}
+{%load static%}
+
+{%block title%} E-commerce Update Product Instance {%endblock%}
+{%block content%}
+    <h1>Edit Products Instance Form</h1>
+    <form method="POST">
+    {% csrf_token %}
+    {{ form.as_p}}
+    <input type="submit"/>
+    </form>    
+  {% endblock %}
