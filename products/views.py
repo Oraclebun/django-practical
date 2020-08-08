@@ -1,9 +1,8 @@
 from django.shortcuts import render, HttpResponse, redirect, reverse, get_object_or_404
-from .models import Product
+from .models import Product, Category
 from .forms import ProductForm, SearchForm
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib import messages
-from django.contrib.auth import logout
 from django.db.models import Q
 
 
@@ -12,9 +11,36 @@ from django.db.models import Q
 
 def index(request):
     products = Product.objects.all()
+    if request.GET:
+        # always true query:
+        queries = ~Q(pk__in=[])
+        # if a name is specified, add it to the query
+        if ('search_input' in request.GET and request.GET['search_input']):
+            print(request.GET)
+            search_input = request.GET['search_input']
+            queries = queries & Q(name__icontains=search_input)\
+                | Q(desc__icontains=search_input)
+
+        # if a category is specified, add it to the query
+        if 'category' in request.GET and request.GET['category']:
+            print(request.GET)
+            category = request.GET['category']
+            queries = queries & Q(category__in=category)
+
+        # update the existing book found
+        products = products.filter(queries)
+    search_form = SearchForm(request.GET)
+    categories = Category.objects.all()
+    cat_urls = ['view_breakfast_product', 'view_cookie_product',
+                'view_grain_product', 'view_nuts_product',
+                'view_baking_product', 'view_fresh_product']
     return render(request, 'products/index.template.html', {
-        'products': products
-    })
+                  'products': products,
+                  'categories': categories,
+                  'search_form': search_form,
+                  'cat_urls': cat_urls
+                  })
+
 
 @login_required
 @permission_required('products.input_product')
@@ -41,6 +67,7 @@ def input_product(request):
             'form': input_form
         })
 
+
 @login_required
 @permission_required('products.update_product')
 def update_product(request, product_id):
@@ -66,6 +93,7 @@ def update_product(request, product_id):
                       'form': update_form
                       })
 
+
 @login_required
 @permission_required('products.delete_product')
 def delete_product(request, product_id):
@@ -74,3 +102,64 @@ def delete_product(request, product_id):
         product_to_delete.delete()
         return redirect(reverse(index))
 
+
+def breakfast(request):
+    """View function for Breakfast Products only"""
+
+    breakfast_products = Product.objects.filter(
+        category__name__iexact='breakfast').order_by('name')
+    return render(request, 'products/breakfast.template.html', {
+        'breakfast_products': breakfast_products
+    })
+
+
+def cookies(request):
+    """View function for Biscuits & Cookies only"""
+
+    cookies_products = Product.objects.filter(
+        category__name__icontains='cookie').order_by('name')
+    return render(request, 'products/cookies.template.html', {
+        'cookies_products': cookies_products
+    })
+
+def grains(request):
+    """View function for Merle ProbeCards only"""
+
+    breakfast_products = Product.objects.filter(
+        category__name__iexact='breakfast').order_by('name')
+    return render(request, 'products/breakfast.template.html', {
+        'breakfast_products': breakfast_products
+    })
+
+def nuts(request):
+    """View function for Merle ProbeCards only"""
+
+    breakfast_products = Product.objects.filter(
+        category__name__iexact='breakfast').order_by('name')
+    return render(request, 'products/breakfast.template.html', {
+        'breakfast_products': breakfast_products
+    })
+
+def baking(request):
+    """View function for Merle ProbeCards only"""
+
+    breakfast_products = Product.objects.filter(
+        category__name__iexact='breakfast').order_by('name')
+    return render(request, 'products/breakfast.template.html', {
+        'breakfast_products': breakfast_products
+    })
+
+def fresh(request):
+    """View function for Merle ProbeCards only"""
+
+    breakfast_products = Product.objects.filter(
+        category__name__iexact='breakfast').order_by('name')
+    return render(request, 'products/breakfast.template.html', {
+        'breakfast_products': breakfast_products
+    })
+
+def view_product_details(request, product_id):
+    product = get_object_or_404(Product, pk=product_id)
+    return render(request, 'products/details.template.html', {
+        'product': product
+    })

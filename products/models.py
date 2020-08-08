@@ -18,8 +18,17 @@ class Country(models.Model):
         return self.name
 
 
+class Subcategory(models.Model):
+    name = models.CharField(blank=False, max_length=50)
+
+    def __str__(self):
+        return self.name
+
+
 class Category(models.Model):
     name = models.CharField(blank=False, max_length=50)
+    cat_no = models.IntegerField(blank=False)
+    url_tag = models.CharField(blank=False, max_length=50)
 
     def __str__(self):
         return self.name
@@ -44,9 +53,11 @@ class Product(models.Model):
     image = models.URLField(blank=False)
     root_price = models.DecimalField(max_digits=10, decimal_places=3,
                                      blank=False)
-    category = models.ManyToManyField('Category')
+    category = models.ForeignKey('Category', on_delete=models.CASCADE)
+    subcategory = models.ManyToManyField(Subcategory)
     usage = models.ManyToManyField('Usage')
     editor = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    date_edited = models.DateTimeField(auto_now_add=True, blank=True)
 
     def __str__(self):
         return self.name
